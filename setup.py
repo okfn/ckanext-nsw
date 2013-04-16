@@ -26,6 +26,6 @@ setup(
 	"""
         [ckan.plugins]
 	# Add plugins here, eg
-	# myplugin=ckanext.nsw:PluginClass
+	nsw=ckanext.nsw.plugin:NSWPlugin
 	""",
 )
