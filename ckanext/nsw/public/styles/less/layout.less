@@ -9,10 +9,10 @@
 .nav-item.active > a:before {
 	background-image:none;
   width: 0; 
-	height: 0; 
-	border-top: 17px solid transparent;
-	border-bottom: 17px solid transparent;
-	border-left: 6px solid #8CA0A6;
+	height: 0; 	
+	border-top: 17px solid rgba(140,160,166,0);
+	border-bottom: 17px solid rgba(140,160,166,0);
+	border-left: 6px solid rgba(140,160,166,1);
 }
 
 
@@ -143,7 +143,9 @@ div.hero[role="main"]:before {
 	right:-12px;
 	width:0;
 	height:0;
-	border-color:transparent transparent transparent #005D7A;
+	border-color:rgb(0,93,122); /* Fallback for IE8 */
+	border-color:rgba(0,93,122,0);
+	border-left-color: rgba(0,93,122,1);
 	border-style:solid;
 	border-width:12px 0 12px 12px;		
 }	
@@ -170,7 +172,9 @@ div.hero[role="main"]:before {
 }	
 .hero .tags ul a.tag:hover:before,
 .tags ul.tag-list a.tag:hover:before {
-	border-color:transparent transparent transparent #003647;
+	border-color:rgb(0,54,71); /* Fallback for IE8 */
+	border-color:rgba(0,54,71,0);
+	border-left-color: rgba(0,54,71,1);
 }	
 
 
@@ -181,7 +185,9 @@ div.hero[role="main"]:before {
 	position:absolute;
 	width:0;
 	height:0;
-	border-color:transparent transparent transparent rgba(0, 0, 0, 0.0); /* shadow colour */
+	border-color:rgb(0,93,122); /* Fallback for IE8 */
+	border-color:rgba(0, 0, 0, 0);
+	border-left-color:rgba(0, 0, 0, 0); /* shadow colour */
 	border-style:solid;
 	border-width:12px 0 12px 12px;	
 	right: -3px;
