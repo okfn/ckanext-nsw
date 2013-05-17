@@ -1,4 +1,12 @@
 {% ckan_extends %}
+
+{% block home_primary %}
+{% endblock %}
+{% block home_image %}
+  <section class="featured media-overlay">
+  <img src="/images/background.jpg" width="420" height="220" />
+  </section>
+{% endblock %}
 {% block home_tags %}
   <div class="tags">
     <h3>{{ _('Popular Tags') }}</h3>
