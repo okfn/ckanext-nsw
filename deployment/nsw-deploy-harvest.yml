@@ -1,0 +1,66 @@
+#
+#   CKAN harvester extension installation
+#   -------------------------------------
+#
+#   See README for details on usage and the tasks performed
+#
+---
+- hosts: nsw
+  vars:
+    virtualenv: nsw
+  tasks:
+    - name: make sure packages are installed
+      action: yum pkg=$item state=installed
+      with_items:
+        - redis
+        - cronie
+
+    - name: get harvest extension
+      action: git repo=https://github.com/okfn/ckanext-harvest dest=/usr/lib/ckan/{{ virtualenv }}/src/ckanext-harvest version=stable
+
+    - name: run setup.py develop for harvest
+      action: command chdir=/usr/lib/ckan/{{ virtualenv }}/src/ckanext-harvest/ ../../bin/python setup.py develop
+
+    - name: install requirements for harvest
+      action: pip requirements=/usr/lib/ckan/{{ virtualenv }}/src/ckanext-harvest/pip-requirements.txt virtualenv=/usr/lib/ckan/{{ virtualenv }}
+
+    - name: install python redis client
+      action: pip name=redis version=2.8.0 virtualenv=/usr/lib/ckan/{{ virtualenv }}
+
+    # The supervisor version on EPEL is old and buggy, install the latest on the virtualenv
+    - name: install supervisor
+      action: pip name=supervisor version=3.0 virtualenv=/usr/lib/ckan/{{ virtualenv }}
+
+    - name: copy all needed files
+      action: template src=$item dest=/$item backup=yes
+      with_items:
+        - etc/supervisord.conf
+        - etc/cron.d/ckan-harvest
+        - etc/init/supervisor.conf
+
+    - name: copy executables
+      action: copy src=$item dest=/$item mode=744
+      with_items:
+        - tmp/after_harvester.sh
+
+    - name: create supervisorctl symlink
+      action: file src=/usr/lib/ckan/{{ virtualenv }}/bin/supervisorctl dest=/usr/bin/supervisorctl state=link
+
+    - name: add harvest and ckan_harvester plugins to the ini file
+      action: lineinfile dest=/etc/ckan/{{ virtualenv }}/production.ini
+                         backup=yes
+                         backrefs=yes
+                         state=present
+                         regexp='ckan.plugins\s?=(.*)'
+                         line='ckan.plugins =\1 harvest ckan_harvester'
+
+    - name: add redis backend option to the ini file
+      action: lineinfile dest=/etc/ckan/{{ virtualenv }}/production.ini
+                         backup=yes
+                         state=present
+                         regexp='^ckan.harvest.mq.type=redis'
+                         line='ckan.harvest.mq.type=redis'
+                         insertafter='ckan.plugins(.*)\n'
+
+    - name: run after install script
+      shell: /tmp/after_harvester.sh

@@ -1,0 +1,43 @@
+
+# nsw-deploy-harvest.yml
+
+CKAN harvester extension installation
+
+Usage:
+
+* Install ansible (https://github.com/ansible/ansible)
+* Add the staging or production server IP to your /etc/ansible/hosts file:
+
+        [nsw]
+        XX.XX.XX.XXX
+
+* Run the playbook:
+
+        ansible-playbook nsw-deploy-harvest.yml -u root -s
+
+We assume:
+
+* A running CKAN instance installed at the default locations:
+    - code at /usr/lib/ckan/{virtualenv}
+    - configuration at /etc/ckan/{virtualenv}
+
+* EPEL repository already set up
+
+
+What this script does:
+
+* Install cronie and redis packages (redis from the EPEL repository)
+* Download the source and install ckanext-harvest in the virtualenv,
+  including its dependencies
+* Install a recent version of supervisor (http://supervisord.org/) in the
+  virtualenv and copy its configuration files to /etc
+* Supervisor will make sure that the two processes used by the harvesting
+  (gather_consumer and fetch_consumer) are always up.
+* Set up a cron job that will run the harvester command periodically
+  (every 3 minutes)
+* Modify the CKAN ini configuration file to add the two harvest plugins
+  and extra options needed.
+
+The script will **not** restart Apache after finishing so changes can be
+manually checked.
+
